@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+//import 'package:flutter_rtmp_publisher/flutter_rtmp_publisher.dart';
 import 'package:object_detection/realtime/bounding_box.dart';
 import 'package:object_detection/realtime/camera.dart';
 import 'dart:math' as math;
@@ -16,15 +17,16 @@ class _LiveFeedState extends State<LiveFeed> {
   List<dynamic> _recognitions;
   int _imageHeight = 0;
   int _imageWidth = 0;
-  initCameras() async {
-
-  }
+  initCameras() async {}
   loadTfModel() async {
     await Tflite.loadModel(
       model: "assets/models/ssd_mobilenet.tflite",
       labels: "assets/models/labels.txt",
     );
   }
+
+  var _streamURL = TextEditingController();
+
   /* 
   The set recognitions function assigns the values of recognitions, imageHeight and width to the variables defined here as callback
   */
@@ -37,9 +39,16 @@ class _LiveFeedState extends State<LiveFeed> {
   }
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     loadTfModel();
+    _streamURL.text = '';
+  }
+
+  @override
+  void dispose() {
+    _streamURL.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,6 +57,37 @@ class _LiveFeedState extends State<LiveFeed> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Real Time Object Detection"),
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.stream),
+        //     onPressed: () {
+        //       showDialog(
+        //           context: context,
+        //           builder: (_) {
+        //             return SimpleDialog(
+        //               title: Text('Please enter your RTMP Stream URL'),
+        //               children: [
+        //                 TextField(
+        //                   controller: _streamURL,
+        //                   keyboardType: TextInputType.url,
+        //                   decoration: InputDecoration(
+        //                       hintText: '<PLACE_YOUR_RTMP_STREAM_URL>'),
+        //                   onChanged: (url) => _streamURL.text = url,
+        //                 ),
+        //                 SizedBox(
+        //                   height: 10,
+        //                 ),
+        //                 RaisedButton(
+        //                   child: Text('Stream Video'),
+        //                   onPressed: () =>
+        //                       RTMPPublisher.streamVideo(_streamURL.text),
+        //                 )
+        //               ],
+        //             );
+        //           });
+        //     },
+        //   )
+        // ],
       ),
       body: Stack(
         children: <Widget>[
